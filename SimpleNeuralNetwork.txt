@@ -1,0 +1,105 @@
+Simple two hidden layer propagation network
+
+Forward propagation
+
+- l1 = x
+- z1 = W1 * l1 + b1
+- l2 = activationF1(z1)
+- z2 = W2 * l2 + b2
+- l3 = activationF2(z2)
+
+l3 = activationF2(W2 * activationF1(W1 * l1 + b1) + b2)
+
+Back propagation
+- E = errorFunction(T,l3)
+- dE/dl3 = d(errorFunction(T,l3))/dl3
+- The result of dE/dl3 is vector
+- dE/dz2 
+	- E = F(l3(z2)) 
+	- dE/dz2 = dE/dl3 * dl3/dz2 -> by chain rule
+- dl3/dz2  
+	- z2 = f(W2,b2)
+	- l3 = g(z2) = activationF2(z2)
+	- dl3/dz2 = d(activationF2(z2)/dz2)
+
+- dl3/dz2 is going to be a vector defined by d(activationF2(z2)/dz2)
+- Calculate the dE/dW2 and dE/b2
+	- E = f(l3(z2(W2,b2)))
+	- dE/W2 = dE/dl3 * dl3/dz2 * dz2/dW2
+	- dE/b2 = dE/dl3 * dl3/dz2 * dz2/db2
+- Calculate new weights and biases
+	- W_new = W2 - learning_rate*dE/dW2
+	- b_new = b2 - learning_rate*dE/dW2
+	- Caviar, the gradient gives you the steepest way down to minimize the error, so the steps required for 
+	  need to be adjusted with some algorithm for optimization like RMSprop
+- dE/l2
+	- E = F(l3(z2(l2)))
+	- dE/dl2 = dE/dl3*dl3/dz2*dz2/dl2
+- dE/dz1 
+	- dE/dl2 * dl2/dz1 
+	- dl2/dz1 = d(activationF1(z1))/dz1
+- dE/dW1 and dE/db1
+	- dE/dW1 = dE/dz1 * dz1/dW1
+	- dE/db1 = dE/dz1 * dz1/db1
+- Calculate the dE/dW2 and dE/b2
+
+//////////////////////////////////////////////////////////////////////////// Terminal Commands //////////////////////////////////////////////////////////////////////////////
+
+
+>> # Set Path to the folder where training data is stored
+>> # Set Path to the folder where test data is stored
+
+>> # Initailization of matrices and vectors
+>> # set input layer size 
+>> # set hidden layer size
+>> # set output layer size
+>> # set learning rate
+>> # set error function
+>> # set activation function for hidden layer
+>> # set activation function for output layer
+>> # set number of iterations
+
+>> # Randomly initialize the weights and biases
+>> # W1 = randn(hidden_layer_size, input_layer_size)
+>> # b1 = randn(hidden_layer_size, 1)
+>> # W2 = randn(output_layer_size, hidden_layer_size)
+>> # b2 = randn(output_layer_size, 1)
+>> # l1 = zeros(input_layer_size, 1)
+
+>> # Training the network
+>> # for i = 1:iterations
+>> # 	# Forward propagation
+>> # 	l1 = training_data
+>> # 	T = label_data
+>> # 	z1 = W1 * l1 + b1
+>> # 	l2 = activationF1(z1)
+>> # 	z2 = W2 * l2 + b2
+>> # 	l3 = activationF2(z2)
+>> # 	E = errorFunction(T,l3)
+
+>> # 	# Back propagation
+>> # 	# dE/dl3 = d(errorFunction(T,l3))/dl3 = errorFunction(T_i,l3_i)/l3_i
+>> # 	# dE/dz2 = (dE/dl3) * dl3/dz2
+>> #    # dE/dz2 = errorFunction(T_i,l3_i)/l3_i * sigmoid(z2_i)*(1-sigmoid(z2_i)) 
+>> # 	dE/dW2 = dE/dl3 * dE/dl3 * dl3/dz2 * dz2/dW2
+>> # 	dE/db2 = dE/dl3 * dE/dl3 * dl3/dz2 * dz2/db2  
+>> # 	# dE/dl2 = (dE/dl3)*(dl3/dz2)*(dz2/dl2)
+>> # 	dE/dz1 = (dE/dl3)*(dl3/dz2)*(dz2/dl2)*(dl2/dz1)
+>> # 	dE/dW1 = (dE/dl3)*(dl3/dz2)*(dz2/dl2)*(dl2/dz1)*(dz1/dW1)
+>> # 	dE/db1 = (dE/dl3)*(dl3/dz2)*(dz2/dl2)*(dl2/dz1)*(dz1/db1)
+
+>> # 	# Update the weights and biases
+>> # 	W2 = W2 - learning_rate*dE/dW2
+>> # 	b2 = b2 - learning_rate*dE/db2
+>> # 	W1 = W1 - learning_rate*dE/dW1
+>> # 	b1 = b1 - learning_rate*dE/db1
+>> # end
+
+>> # Testing the network
+>> # l1 = test_data
+>> # z1 = W1 * l1 + b1 
+>> # l2 = activationF1(z1)
+>> # z2 = W2 * l2 + b2
+>> # l3 = activationF2(z2)
+>> # E = errorFunction(T,l3)
+>> # print(E)
