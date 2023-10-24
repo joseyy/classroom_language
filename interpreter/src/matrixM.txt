@@ -1,0 +1,12 @@
+#include <iostream>
+#include <boost/random.hpp>
+#include <chrono>
+#include <vector>
+#include "../includes/matrix.hpp"
+#include "../includes/cudaMemoryManager.hpp"
+#include "../includes/neuralNFunctionsClass.hpp"
+
+int main(int argv, char **argc)
+{
+
+    

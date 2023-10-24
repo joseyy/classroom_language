@@ -9,49 +9,64 @@ private:
     int deviceCount;
     cudaDeviceProp deviceProp;
     cudaError_t cudaStatus;
+    unsigned int usedBlocks, usedThreads, usedSharedMemory, usedRegisters;
 
 public:
-    CudaManager(bool getDeviceProperties = true);
+    CudaManager();
     ~CudaManager();
     void printDeviceProperties();
     void updateDeviceProperties();
+    void setUsedBlocks(unsigned int &usedBlocks)
+    {
+        this->usedBlocks = usedBlocks;
+    }
+    void setUsedThreads(unsigned int &usedThreads)
+    {
+        this->usedThreads = usedThreads;
+    }
+    void setUsedSharedMemory(unsigned int &usedSharedMemory)
+    {
+        this->usedSharedMemory = usedSharedMemory;
+    }
+    void setUsedRegisters(unsigned int &usedRegisters)
+
+    {
+        this->usedRegisters = usedRegisters;
+    }
+    void getLeftoverResources(unsigned int &leftoverBlocks,
+                              unsigned int &leftoverThreads,
+                              unsigned int &leftoverSharedMemory,
+                              unsigned int &leftoverRegisters)
+    {
+        leftoverBlocks = this->deviceProp.maxBlocksPerMultiProcessor - this->usedBlocks;
+        leftoverThreads = this->deviceProp.maxThreadsPerMultiProcessor - this->usedThreads;
+        leftoverSharedMemory = this->deviceProp.sharedMemPerBlock - this->usedSharedMemory;
+        leftoverRegisters = this->deviceProp.regsPerBlock - this->usedRegisters;
+    }
 };
 
-CudaManager::CudaManager(bool gerDeviceProperties)
+CudaManager::CudaManager()
 {
-    if (gerDeviceProperties)
+
+    cudaStatus = cudaGetDeviceCount(&deviceCount);
+
+    if (cudaStatus != cudaSuccess)
     {
-
-        cudaStatus = cudaGetDeviceCount(&deviceCount);
-        try
-        {
-            if (cudaStatus != cudaSuccess)
-            {
-                throw cudaStatus;
-            }
-        }
-        catch (cudaError_t cudaStatus)
-        {
-            std::cerr << "cudaGetDeviceProperties failed!. Error:" << cudaStatus << std::endl;
-            exit(EXIT_FAILURE);
-        }
-
-        std::cout << "Found " << deviceCount << " CUDA-capable GPU(s)" << std::endl;
-
-        cudaStatus = cudaGetDeviceProperties(&deviceProp, 0);
-        try
-        {
-            if (cudaStatus != cudaSuccess)
-            {
-                throw cudaStatus;
-            }
-        }
-        catch (cudaError_t cudaStatus)
-        {
-            std::cerr << "cudaGetDeviceProperties failed!. Error:" << cudaStatus << std::endl;
-            exit(EXIT_FAILURE);
-        }
+        std::cerr << "cudaGetDeviceProperties failed!. Error:" << cudaStatus << std::endl;
+        exit(EXIT_FAILURE);
     }
+
+    std::cout << "Found " << deviceCount << " CUDA-capable GPU(s)" << std::endl;
+
+    cudaStatus = cudaGetDeviceProperties(&deviceProp, 0);
+
+    if (cudaStatus != cudaSuccess)
+    {
+        std::cerr << "cudaGetDeviceProperties failed!. Error:" << cudaStatus << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    // set device properties
 }
 
 CudaManager::~CudaManager()
@@ -77,6 +92,8 @@ void CudaManager::printDeviceProperties()
     std::cout << "Texture alignment: " << deviceProp.textureAlignment << std::endl;
     std::cout << "Concurrent copy and execution: " << (deviceProp.deviceOverlap ? "Yes" : "No") << std::endl;
     std::cout << "Number of multiprocessors: " << deviceProp.multiProcessorCount << std::endl;
+    std::cout << "Threads per multiprocessor: " << deviceProp.maxThreadsPerMultiProcessor << std::endl;
+    std::cout << "Max num of Blocks per multiprocessor: " << deviceProp.maxBlocksPerMultiProcessor << std::endl;
 }
 
 void CudaManager::updateDeviceProperties()

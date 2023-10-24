@@ -1,5 +1,5 @@
 #pragma once
-#include "cudaManager.cuh"
+#include "./cudaManager.hpp"
 #include <vector>
 #include <algorithm>
 #include <list>
@@ -9,10 +9,10 @@ class CudaMemoryManager : public CudaManager
 {
 private:
     std::vector<T *> devicePtr;
-    int freeMemory, totalMemory;
+    size_t freeMemory, totalMemory;
 
 public:
-    CudaMemoryManager() : CudaManager(false) {}
+    CudaMemoryManager() : CudaManager() {}
     ~CudaMemoryManager();
     void allocate(T *&ptr, size_t size);
     void deallocate(T *&ptr);
@@ -121,7 +121,6 @@ void CudaMemoryManager<T>::copyToHost(T *&hostPtr, const T *devicePtr, size_t si
     {
         hostPtr = new T[size];
     }
-
 
     cudaError_t cudaMemoryCopyError = cudaMemcpy(hostPtr, devicePtr, size * sizeof(T), cudaMemcpyDeviceToHost);
     if (cudaMemoryCopyError != cudaSuccess)
