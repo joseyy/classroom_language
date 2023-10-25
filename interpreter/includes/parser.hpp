@@ -16,18 +16,16 @@ class Parser
 {
 
 public:
-    Parser(std::vector<Token> tokens)
-        : tokens_(std::move(tokens)), current_token_index_(0) {}
+    Parser()
+        : current_token_index_(0) {}
 
-    ASTPointer parse_line()
+    ASTPointer parse_line(std::vector<Token> token_line)
     {
-        ASTPointer statement = parse_statement();
+        // copy token_line to tokens_
+        tokens_.resize(token_line.size());
+        std::copy(token_line.begin(), token_line.end(), std::begin(tokens_));
 
-        if (!match(TokenType::END_OF_LINE))
-        {
-            throw InterpreterError("Expected END_OF_LINE token");
-        }
-        consume(); // consume the END_OF_LINE token
+        ASTPointer statement = parse_statement();
 
         return statement;
     }
@@ -78,23 +76,7 @@ private:
         {
             return parse_control_flow_statement();
         }
-        else if (match(TokenType::ELSEIF))
-        {
-            return parse_control_flow_statement();
-        }
-        else if (match(TokenType::ELSE))
-        {
-            return parse_control_flow_statement();
-        }
         else if (match(TokenType::FOR))
-        {
-            return parse_control_flow_statement();
-        }
-        else if (match(TokenType::COLON))
-        {
-            return parse_control_flow_statement();
-        }
-        else if (match(TokenType::END))
         {
             return parse_control_flow_statement();
         }
@@ -114,7 +96,7 @@ private:
         {
             consume(); // consume the ASSIGNMENT token
             ASTPointer value = parse_expression();
-            return std::static_pointer_cast<ASTNode>(std::make_shared<AssignmentNode>(target, std::move(value)));
+            return ASTPointer(std::make_shared<AssignmentNode>(target, std::move(value)));
         }
         else if (match(TokenType::DOT))
         {
@@ -132,10 +114,16 @@ private:
     {
         ASTPointer left = parse_term();
 
-        while (match(TokenType::PLUS) ||
-               match(TokenType::MINUS) ||
-               match(TokenType::MUL) ||
-               match(TokenType::DIV))
+        if (match(TokenType::PLUS) ||
+            match(TokenType::MINUS) ||
+            match(TokenType::MUL) ||
+            match(TokenType::DIV) ||
+            match(TokenType::EQUAL) ||
+            match(TokenType::NOT_EQUAL) ||
+            match(TokenType::GREATER_THAN) ||
+            match(TokenType::LESS_THAN) ||
+            match(TokenType::GREATER_THAN_EQUAL) ||
+            match(TokenType::LESS_THAN_EQUAL))
         {
             Token op = current_token();
             consume(); // consume the operator token
@@ -149,10 +137,10 @@ private:
     {
         ASTPointer left = parse_factor();
 
-        while (match(TokenType::PLUS) ||
-               match(TokenType::MINUS) ||
-               match(TokenType::MUL) ||
-               match(TokenType::DIV))
+        if (match(TokenType::PLUS) ||
+            match(TokenType::MINUS) ||
+            match(TokenType::MUL) ||
+            match(TokenType::DIV))
         {
             Token op = current_token();
             consume(); // consume the operator token
@@ -168,7 +156,7 @@ private:
         {
             int value = std::stoi(current_token().value);
             consume(); // consume the NUMBER token
-            return std::static_pointer_cast<ASTNode>(std::make_shared<NumberNode>(value));
+            return ASTPointer(std::make_shared<NumberNode>(value));
         }
         else if (match(TokenType::IDENTIFIER))
         {
@@ -194,7 +182,7 @@ private:
             throw InterpreterError("Unexpected token");
         }
     }
-    // ASTPointer parse_assignment();
+
     ASTPointer parse_function_call(const std::string &name)
     {
         std::string name = current_token().value;
@@ -210,31 +198,154 @@ private:
             throw InterpreterError("Expected RPAREN token");
         }
         consume(); // consume the RPAREN token
-        return std::static_pointer_cast<ASTNode>(std::make_shared<FunctionCallNode>(name, std::move(args)));
+        return ASTPointer(std::make_shared<FunctionCallNode>(name, std::move(args)));
     }
 
-    ASTPointer parse_method_call(std::unique_ptr<ASTNode> object, const std::string &name);
-    ASTPointer parse_variable();
-    std::vector<ASTPointer> parse_arguments();
-    std::vector<ASTPointer> parse_parameter_list();
-    ASTPointer parse_function_definition();
-    ASTPointer parse_control_flow_statement();
-    std::vector<ASTPointer> parse_statement_list();
-    std::vector<ASTPointer> parse_block();
-
-    std::vector<Token> tokens_;
-    size_t current_token_index_;
-
+    ASTPointer parse_method_call(std::unique_ptr<ASTNode> object,
+                                 const std::string &name)
     {
-        if (current_token_index_ < tokens_.size())
+
+        consume(); // consume token with name of method
+
+        // Expect LPAREN token
+        if (!match(TokenType::LPAREN))
         {
-            ++current_token_index_;
+            throw InterpreterError("Expected LPAREN token");
+        }
+        consume(); // consume the LPAREN token
+
+        std::vector<ASTPointer> args = parse_arguments();
+
+        // Expect RPAREN token
+        if (!match(TokenType::RPAREN))
+        {
+            throw InterpreterError("Expected RPAREN token");
+        }
+        consume(); // consume the RPAREN token
+        return ASTPointer(std::make_shared<MethodCallNode>(std::move(object), name, std::move(args)));
+    }
+
+    std::vector<ASTPointer> parse_arguments()
+    {
+        std::vector<ASTPointer> args;
+        if (!match(TokenType::RPAREN))
+        {
+            args = parse_parameter_list();
+        }
+        return args;
+    }
+
+    std::vector<ASTPointer> parse_parameter_list()
+    {
+        std::vector<ASTPointer> args;
+        args.push_back(parse_expression());
+        if (match(TokenType::COMMA))
+        {
+            consume(); // consume the COMMA token
+            args.push_back(parse_expression());
+        }
+        return args;
+    }
+
+    ASTPointer parse_variable()
+    {
+        std::string name = current_token().value;
+        consume(); // consume the IDENTIFIER token
+        if (match(TokenType::DOT))
+        {
+            consume(); // consume the DOT token
+            return parse_method_call(std::make_unique<VariableNode>(name),
+                                     current_token().value);
         }
         else
         {
-            current_token_index_ = -1;
+            return ASTPointer(std::make_shared<VariableNode>(name));
         }
     }
+
+    ASTPointer parse_control_flow_statement()
+    {
+        if (match(TokenType::IF))
+        {
+            return parse_if_statement();
+        }
+        else if (match(TokenType::FOR))
+        {
+            return parse_for_statement();
+        }
+        else
+        {
+            throw InterpreterError("Unexpected token");
+        }
+    }
+    ASTPointer parse_if_statement()
+    {
+        // save token value
+        TokenType if_token = current_token().type;
+        consume(); // consume the IF token
+        ASTPointer blcok_condition_expression = parse_expression();
+        if (!match(TokenType::COLON))
+        {
+            throw InterpreterError("Expected COLON token");
+        }
+        consume(); // consume the COLON token
+
+        // start new block and get the lines tree
+        std::vector<ASTPointer> block_expression = parse_block();
+
+        return ASTPointer(std::make_shared<IfNode>(std::move(blcok_condition_expression),
+                                                   std::move(block_expression)));
+    }
+    ASTPointer parse_for_statement()
+    {
+        std::string token_value = current_token().value;
+        consume(); // consume the FOR token
+        ASTPointer block_condition_expression = parse_expression();
+        if (!match(TokenType::COLON))
+        {
+            throw InterpreterError("Expected COLON token");
+        }
+        consume(); // consume the COLON token
+
+        // start new block and get the lines
+        std::vector<ASTPointer> block_expression = parse_block();
+
+        return ASTPointer(std::make_shared<ForNode>(std::move(block_condition_expression),
+                                                    std::move(block_expression)));
+    }
+
+    std::vector<ASTPointer> parse_block()
+    {
+
+        Lexer lexer;
+        Parser block_parser;
+        std::vector<ASTPointer> block_lines;
+        std::vector<Token> tokens;
+        std::string input;
+
+        // get last element of tokens
+        while (tokens.back().type != TokenType::END_OF_LINE)
+        {
+            // get input for block
+            std::cout << ">>    ";
+            std::getline(std::cin, input);
+
+            // Tokenize input
+            tokens = lexer.tokenize(input);
+            // Parse tokens into AST
+            block_lines.push_back(block_parser.parse_line(tokens));
+        }
+
+        return block_lines;
+    }
+
+    ASTPointer parse_assignment();
+    ASTPointer parse_function_definition();
+    std::vector<ASTPointer> parse_statement_list();
+
+    std::vector<Token> tokens_;
+    size_t current_token_index_;
+    bool in_block_ = false;
 };
 
 #endif // PARSER_HPP

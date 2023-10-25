@@ -11,16 +11,13 @@
 class Lexer
 {
 private:
-    std::string input_;
     std::vector<Token> tokens;
 
 public:
-    Lexer(const std::string &input) : input_(input)
+    Lexer() {}
+    std::vector<Token> tokenize(const std::string &input)
     {
-    }
-    std::vector<Token> tokenize()
-    {
-        std::istringstream iss(input_);
+        std::istringstream iss(input);
         char c;
         while (iss >> c)
         {
@@ -74,20 +71,16 @@ public:
             {
                 tokens.push_back({TokenType::RPAREN, ")"});
             }
-            else if(c == '.')
+            else if (c == '.')
             {
                 tokens.push_back({TokenType::DOT, "."});
-            }
-            else if(c == ';')
-            {
-                tokens.push_back({TokenType::END_OF_LINE, ";"});
             }
             else
             {
                 throw InterpreterError("Invalid character");
             }
         }
-
+        tokens.push_back({TokenType::END_OF_LINE, "End"});
         return tokens;
     }
 };

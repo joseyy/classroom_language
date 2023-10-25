@@ -102,6 +102,49 @@ private:
     std::string name_;
 };
 
+class IfNode : public ASTNode
+{
+public:
+    IfNode(std::unique_ptr<ASTPointer> condition_expresion,
+           std::unique_ptr<std::vector<ASTPointer>> body)
+        : condition_expression_(std::move(condition_expresion)),
+          body_(std::move(body))
+    {
+    }
+
+    void accept(ASTVisitor &visitor) const override
+    {
+        visitor.visit(*this);
+    }
+
+private:
+    std::unique_ptr<ASTPointer> condition_expression_;
+    std::unique_ptr<std::vector<ASTPointer>> body_;
+    ASTPointer else_body_;
+    ASTPointer esle_if_condition_;
+    ASTPointer else_if_body_;
+};
+
+class ForNode : public ASTNode
+{
+public:
+    ForNode(std::unique_ptr<ASTPointer> condition_expresion,
+            std::unique_ptr<std::vector<ASTPointer>> body)
+        : condition_expression_(std::move(condition_expresion)),
+          body_(std::move(body))
+    {
+    }
+
+    void accept(ASTVisitor &visitor) const override
+    {
+        visitor.visit(*this);
+    }
+
+private:
+    std::unique_ptr<ASTPointer> condition_expression_;
+    std::unique_ptr<std::vector<ASTPointer>> body_;
+};
+
 class ASTVisitor
 {
 public:
@@ -112,6 +155,8 @@ public:
     virtual void visit(const FunctionCallNode &node) = 0;
     virtual void visit(const MethodCallNode &node) = 0;
     virtual void visit(const VariableNode &node) = 0;
+    virtual void visit(const IfNode &node) = 0;
+    virtual void visit(const ForNode &node) = 0;
 };
 
 #endif // AST_HPP

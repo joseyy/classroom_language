@@ -21,8 +21,8 @@ public:
         try
         {
             // Tokenize input
-            Lexer lexer(input);
-            std::vector<Token> tokens = lexer.tokenize();
+            Lexer lexer;
+            std::vector<Token> tokens = lexer.tokenize(input);
 
             /*
                         // Parse tokens into AST

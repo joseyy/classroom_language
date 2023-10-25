@@ -28,6 +28,12 @@ enum class TokenType
     BRAKET_OPEN,
     BRAKET_CLOSE,
     COLON,
+    GREATER_THAN,
+    LESS_THAN,
+    GREATER_THAN_EQUAL,
+    LESS_THAN_EQUAL,
+    EQUAL,
+    NOT_EQUAL,
     END_OF_FILE,
 
 };
