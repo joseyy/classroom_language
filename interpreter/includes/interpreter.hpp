@@ -6,10 +6,10 @@
 #include <fstream>
 #include <stdexcept>
 #include <vector>
-#include "interpreter_error.hpp"
-#include "lexer.hpp"
-#include "parser.hpp"
-#include "codeGenerator.hpp"
+#include "./interpreter_error.hpp"
+#include "./lexer.hpp"
+#include "./parser.hpp"
+// #include "./codeGenerator.hpp"
 
 class Interpreter
 {
@@ -24,11 +24,10 @@ public:
             Lexer lexer;
             std::vector<Token> tokens = lexer.tokenize(input);
 
+            // Parse tokens into AST
+            Parser parser;
+            ASTPointer ast = parser.parse_line(tokens);
             /*
-                        // Parse tokens into AST
-                        Parser parser(tokens);
-                        ASTPointer ast = parser.parse_line();
-        
                         // Generate code from AST
                         CodeGenerator codeGenerator;
                         std::string code = codeGenerator.generate(*ast);

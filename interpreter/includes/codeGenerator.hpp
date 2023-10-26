@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <sstream>
-#include "ast.hpp"
+#include "./ast.hpp"
 
 class CodeGenerator : public ASTVisitor
 {

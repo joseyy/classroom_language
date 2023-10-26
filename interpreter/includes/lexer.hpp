@@ -5,8 +5,8 @@
 #include <string>
 #include <sstream>
 
-#include "interpreter_error.hpp"
-#include "token.hpp"
+#include "./interpreter_error.hpp"
+#include "./token.hpp"
 
 class Lexer
 {
@@ -41,7 +41,34 @@ public:
                     iss >> c;
                     identifier += c;
                 }
-                tokens.push_back({TokenType::IDENTIFIER, identifier});
+                if (identifier == "for")
+                {
+                    tokens.push_back({TokenType::FOR, identifier});
+                }
+                else if (identifier == "if")
+                {
+                    tokens.push_back({TokenType::IF, identifier});
+                }
+                else if (identifier == "else")
+                {
+                    tokens.push_back({TokenType::ELSE, identifier});
+                }
+                else if (identifier == "elseif")
+                {
+                    tokens.push_back({TokenType::ELSEIF, identifier});
+                }
+                else if (identifier == "end")
+                {
+                    tokens.push_back({TokenType::END, identifier});
+                }
+                else if (identifier == "print")
+                {
+                    tokens.push_back({TokenType::PRINT, identifier});
+                }
+                else
+                {
+                    tokens.push_back({TokenType::IDENTIFIER, identifier});
+                }
             }
             else if (isspace(c))
             {
@@ -75,13 +102,27 @@ public:
             {
                 tokens.push_back({TokenType::DOT, "."});
             }
+            else if (c == '=')
+            {
+                tokens.push_back({TokenType::ASSIGNMENT, "="});
+            }
+            else if (c == ',')
+            {
+                tokens.push_back({TokenType::COMMA, ","});
+            }
+            else if (c == ':')
+            {
+                tokens.push_back({TokenType::COLON, ":"});
+            }
             else
             {
                 throw InterpreterError("Invalid character");
             }
         }
         tokens.push_back({TokenType::END_OF_LINE, "End"});
-        return tokens;
+        auto tmp = tokens;
+        tokens.clear();
+        return tmp;
     }
 };
 

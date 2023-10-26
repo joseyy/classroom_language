@@ -2,7 +2,9 @@
 #define AST_POINTER_HPP
 
 #include <memory>
-#include "ast.hpp"
+#include "./ast.hpp"
+
+class ASTNode;
 
 class ASTPointer
 {

@@ -4,6 +4,8 @@
 
 #include "../includes/interpreter.hpp"
 #include "../includes/interpreter_error.hpp"
+#include "../includes/lexer.hpp"
+#include "../includes/parser.hpp"
 
 std::string pathToFile = "output.cpp";
 

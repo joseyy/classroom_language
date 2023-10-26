@@ -30,10 +30,10 @@ enum class TokenType
     COLON,
     GREATER_THAN,
     LESS_THAN,
-    GREATER_THAN_EQUAL,
-    LESS_THAN_EQUAL,
-    EQUAL,
-    NOT_EQUAL,
+    GREATER_THAN_EQUAL_TO,
+    LESS_THAN_EQUAL_TO,
+    EQUAL_TO,
+    NOT_EQUAL_TO,
     END_OF_FILE,
 
 };
