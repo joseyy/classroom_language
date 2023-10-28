@@ -18,25 +18,20 @@ class ASTVisitor
 {
 public:
     virtual ~ASTVisitor() {}
-    virtual void visit(const BinaryOpNode &node) const = 0;
-    virtual void visit(const NumberNode &node) const = 0;
-    virtual void visit(const AssignmentNode &node) const = 0;
-    virtual void visit(const FunctionCallNode &node) const = 0;
-    virtual void visit(const MethodCallNode &node) const = 0;
-    virtual void visit(const VariableNode &node) const = 0;
-    virtual void visit(const IfNode &node) const = 0;
-    virtual void visit(const ForNode &node) const = 0;
-    virtual void visit(const EndOfLineNode &node) const = 0;
+    virtual void visit(const ASTNode &node) const = 0;
 };
 
 class BinaryOpNodeVisitor : public ASTVisitor
 {
 public:
-    void visit(const BinaryOpNode &node) const override
+    void visit(const ASTNode &node) const override
     {
         std::cout << "Visiting BinaryOpNode" << std::endl;
         // Visit the left and right operands of the binary operation
-
+        // PRINT ROOT NODE
+        std::cout << node.op() << std::endl;
+        node.left()->accept(*this);
+        node.right()->accept(*this);
         // Perform any additional processing for the binary operation
         // ...
     }

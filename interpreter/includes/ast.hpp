@@ -12,6 +12,7 @@ class ASTNode
 public:
     virtual ~ASTNode() {}
     virtual void accept(const ASTVisitor &visitor) const = 0;
+    virtual std::string type() const = 0;
 };
 
 class BinaryOpNode : public ASTNode
@@ -34,6 +35,11 @@ public:
         visitor.visit(*this);
     }
 
+    std::string type() const override
+    {
+        return "BinaryOpNode";
+    }
+
 private:
     std::unique_ptr<ASTPointer> left_;
     std::unique_ptr<ASTPointer> right_;
@@ -48,6 +54,11 @@ public:
     void accept(const ASTVisitor &visitor) const override
     {
         visitor.visit(*this);
+    }
+
+    std::string type() const override
+    {
+        return "NumberNode";
     }
 
 private:
@@ -67,6 +78,11 @@ public:
         visitor.visit(*this);
     }
 
+    std::string type() const override
+    {
+        return "AssignmentNode";
+    }
+
 private:
     std::string target_;
     std::unique_ptr<ASTPointer> value_;
@@ -82,6 +98,11 @@ public:
     void accept(const ASTVisitor &visitor) const override
     {
         visitor.visit(*this);
+    }
+
+    std::string type() const override
+    {
+        return "FunctionCallNode";
     }
 
 private:
@@ -104,6 +125,11 @@ public:
         visitor.visit(*this);
     }
 
+    std::string type() const override
+    {
+        return "MethodCallNode";
+    }
+
 private:
     std::unique_ptr<ASTPointer> object_;
     std::string method_name_;
@@ -120,6 +146,11 @@ public:
     void accept(const ASTVisitor &visitor) const override
     {
         visitor.visit(*this);
+    }
+
+    std::string type() const override
+    {
+        return "VariableNode";
     }
 
 private:
@@ -139,6 +170,11 @@ public:
     void accept(const ASTVisitor &visitor) const override
     {
         visitor.visit(*this);
+    }
+
+    std::string type() const override
+    {
+        return "IfNode";
     }
 
 private:
@@ -164,6 +200,11 @@ public:
         visitor.visit(*this);
     }
 
+    std::string type() const override
+    {
+        return "ForNode";
+    }   
+
 private:
     std::vector<std::unique_ptr<ASTPointer>> condition_expression_;
     std::vector<std::unique_ptr<ASTPointer>> body_;
@@ -176,6 +217,11 @@ public:
     void accept(const ASTVisitor &visitor) const override
     {
         visitor.visit(*this);
+    }
+
+    std::string type() const override
+    {
+        return "EndOfLineNode";
     }
 };
 

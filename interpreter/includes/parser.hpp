@@ -54,7 +54,7 @@ private:
         }
         else
         {
-            return Token{TokenType::END_OF_LINE, ""};
+            return tokens_[tokens_.size() - 1]; // return last token    
         }
     }
     bool match(TokenType type) const
@@ -93,6 +93,10 @@ private:
         else if (match(TokenType::NUMBER))
         {
             return parse_expression();
+        }
+        else if (match(TokenType::END_OF_LINE))
+        {
+            return ASTPointer(std::make_shared<EndOfLineNode>());
         }
         else
         {
@@ -248,7 +252,6 @@ private:
         return ASTPointer(std::make_shared<FunctionCallNode>(name,
                                                              std::move(*args)));
     }
-
     ASTPointer parse_method_call(ASTPointer object,
                                  const std::string &name)
     {
@@ -289,7 +292,6 @@ private:
         }
         return args;
     }
-
     std::shared_ptr<std::vector<std::unique_ptr<ASTPointer>>>
     parse_parameter_list(
         std::shared_ptr<std::vector<std::unique_ptr<ASTPointer>>> args)

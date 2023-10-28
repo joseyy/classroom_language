@@ -1,0 +1,91 @@
+
+// Defining lanaguage syntax  for the linear algebra language Calculator
+// This language will be used for linear algebra specific operations
+// and will be used to generate the code for the GPU kernels
+// Operations and functions that will be used in this language
+// 1. Matrix multiplication  (A * B)
+// 2. Matrix addition      (A + B)
+// 3. Matrix subtraction  (A - B)
+// 4. Matrix transpose  (A^T)
+// 5. Matrix inverse    (A^-1)
+// 6. Matrix determinant  (|A|)
+// 8. Matrix rank      (rank(A))
+// 9. Matrix power    (A^p)
+// 10. Matrix norm    (||A||)
+// 11. Matrix eigenvalues  (eig(A))
+// 12. Matrix eigenvectors   (eigv(A))  
+// 15. Matrix LU decomposition   lu(A, L, U)    
+// 23. Matrix dot product  (A . B)
+// 26. Matrix convolution  (A * B)
+// 28. matrix elemt wise operations  (A + B, A - B, A * B, A / B)
+// 29. derivative of a matrix  (dA/dx)
+
+// Defining the syntax for the language
+// 1. 4 types of "multiplication" operations
+//    - Matrix multiplication  (A * B)
+//    - Matrix dot product  (A . B)
+//    - Matrix convolution  (A x B)
+//    - matrix elemt wise multiplication (A .* B)
+
+// 2. Funtions that can be applied to a matrix and represented arithmetically
+//    - Matrix transpose  (A^T)
+//    - Matrix inverse    (A^-1)
+//    - Matrix determinant  (|A|)
+//    - Matrix power    (A^p)
+//    - Matrix norm    (||A||)
+//    - derivative of a matrix  (dA/dx)
+
+// 3. Funtions that can be applied to a matrix and represented as a function
+//    - Matrix rank      (rank(A))
+//    - Matrix eigenvalues  (eig(A))
+//    - Matrix eigenvectors   (eigv(A))
+//    - Matrix LU decomposition   lu(A, L, U)
+
+// 4. Defining Types of Variables
+//    - Static Variables
+//        - Matrix
+//        - Scalar
+//        - Vector
+
+Example :
+
+// Assigning a matrix to a variable 
+A = [1, 2, 3; 4, 5, 6; 7, 8, 9]
+out: [1, 2, 3; 4, 5, 6; 7, 8, 9]
+A = [[1,2,3],[4,5,6],[7,8,9]]
+out: [1, 2, 3; 4, 5, 6; 7, 8, 9]
+
+// Expression evaluation
+B = A^-1
+out: [1, 2, 3; 4, 5, 6; 7, 8, 9]
+C = A*B 
+out: [1, 0, 0; 0, 1, 0; 0, 0, 1]
+
+// Expressions
+B = A*(B+C)-D
+B = A*(B+C)-D^T 
+
+// Functions
+B = A^-1
+B = eig(A)
+B = eigv(A)
+B = rank(A)
+
+// Flow control
+if (A > B) {   // A and B are Scalars
+    C = A + B
+} else {
+    C = A - B
+}
+
+for i in A :
+    
+end
+
+Scope Definition
+
+Program Scope
+Block Scope
+
+
+

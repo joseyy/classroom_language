@@ -119,7 +119,8 @@ public:
                 throw InterpreterError("Invalid character");
             }
         }
-        tokens.push_back({TokenType::END_OF_LINE, "End"});
+        tokens.push_back({TokenType::END_OF_LINE, "\n"});
+
         auto tmp = tokens;
         tokens.clear();
         return tmp;

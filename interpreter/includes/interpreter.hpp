@@ -9,6 +9,8 @@
 #include "./interpreter_error.hpp"
 #include "./lexer.hpp"
 #include "./parser.hpp"
+#include "./ast_visitor.hpp"
+#include "./ast.hpp"
 // #include "./codeGenerator.hpp"
 
 class Interpreter
@@ -27,6 +29,12 @@ public:
             // Parse tokens into AST
             Parser parser;
             ASTPointer ast = parser.parse_line(tokens);
+
+            // Visit AST
+            const BinaryOpNodeVisitor visitor;
+            ast->accept(BinaryOpNodeVisitor);
+
+            // Visit AST
             /*
                         // Generate code from AST
                         CodeGenerator codeGenerator;
